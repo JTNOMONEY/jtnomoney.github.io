@@ -1,0 +1,50 @@
+---
+layout: post
+title:  "Multiple SSH keys for github and bitbucket"
+date:   2018-10-16 16:53:18 +0800
+categories: GIT
+---
+
+
+Generated ssh keys for bitbucket and github
+{% highlight shell%}
+ssh-keygen -t rsa -C "Askey" -f "Askey"
+ssh-keygen -t rsa -C "JTNOMONEY" -f "JTNOMONEY"
+{% endhighlight %}
+
+Clear cached key
+{% highlight shell%}
+ssh-add -D
+{% endhighlight %}
+
+Add two keys
+{% highlight shell%}
+ssh-add ~/.ssh/Askey
+ssh-add ~/.ssh/JTNOMONEY
+{% endhighlight %}
+
+Check all saved keys
+{% highlight shell%}
+ssh-add -l
+{% endhighlight %}
+
+If ssh-add comment returns fail, please check agent below
+{% highlight shell%}
+eval "$(ssh-agent)"
+{% endhighlight %}
+
+Add a config file under ~/.ssh/
+
+{% highlight shell%}
+#--Askey bitbucket
+Host bitbucket.askey.com.tw
+    HostName bitbucket.askey.com.tw
+    IdentityFile ~/.ssh/Askey
+
+#--JTNOMONEY github
+Host github.com
+    HostName github.com
+	IdentityFile ~/.ssh/JTNOMONEY
+{% endhighlight %}
+
+
