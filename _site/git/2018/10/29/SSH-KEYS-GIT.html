@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>The multiple ssh keys for bitbucket and github | JT.H 6-min/km</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="The multiple ssh keys for bitbucket and github" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Create two keys for bitbucket and github ssh-keygen -t rsa -C &quot;company&quot; -f &quot;company&quot; ssh-keygen -t rsa -C &quot;JTNOMONEY&quot; -f &quot;JTNOMONEY&quot;" />
+<meta property="og:description" content="Create two keys for bitbucket and github ssh-keygen -t rsa -C &quot;company&quot; -f &quot;company&quot; ssh-keygen -t rsa -C &quot;JTNOMONEY&quot; -f &quot;JTNOMONEY&quot;" />
+<link rel="canonical" href="http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html" />
+<meta property="og:url" content="http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html" />
+<meta property="og:site_name" content="JT.H 6-min/km" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-10-29T16:45:10+08:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"The multiple ssh keys for bitbucket and github","dateModified":"2018-10-29T16:45:10+08:00","datePublished":"2018-10-29T16:45:10+08:00","url":"http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html"},"description":"Create two keys for bitbucket and github ssh-keygen -t rsa -C &quot;company&quot; -f &quot;company&quot; ssh-keygen -t rsa -C &quot;JTNOMONEY&quot; -f &quot;JTNOMONEY&quot;","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="JT.H 6-min/km" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">JT.H 6-min/km</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">The multiple ssh keys for bitbucket and github</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-10-29T16:45:10+08:00" itemprop="datePublished">Oct 29, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Create two keys for bitbucket and github</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"company"</span> <span class="nt">-f</span> <span class="s2">"company"</span>
+ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"JTNOMONEY"</span> <span class="nt">-f</span> <span class="s2">"JTNOMONEY"</span></code></pre></figure>
+
+<p>Clear cached key</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add <span class="nt">-D</span></code></pre></figure>
+
+<p>Add two keys and check afterwards</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add ~/.ssh/company
+ssh-add ~/.ssh/JTNOMONEY
+ssh-add <span class="nt">-l</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">ssh-add</code> is not working, try</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">eval</span> <span class="s2">"</span><span class="k">$(</span>ssh-agent<span class="k">)</span><span class="s2">"</span></code></pre></figure>
+
+<p>Add a config files ./ssh/config</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#--Company's bitbucket</span>
+Host bitbucket.company.com.tw
+  HostName bitbucket.company.com.tw
+  IdentityFile ~/.ssh/company
+
+<span class="c">#--JTNOMONEY github</span>
+Host github.com
+  HostName github.com
+  IdentityFile ~/.ssh/JTNOMONEY</code></pre></figure>
+
+<p>Set an example of default name/email using <code class="highlighter-rouge">git config</code> and check settings</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#--Company's bitbucket</span>
+git config <span class="nt">--global</span> user.name <span class="s2">"company_name"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"company_name@company.com"</span>
+git config <span class="nt">--list</span></code></pre></figure>
+
+<p>Test github account</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">git clone git@github.com:JTNOMONEY/jtnomoney.github.io.git
+jtnomoney.github.io<span class="nv">$ </span>git config user.name <span class="s2">"jtnomoney"</span>
+jtnomoney.github.io<span class="nv">$ </span>git config user.email <span class="s2">"jtnomoney@gmail.com"</span></code></pre></figure>
+
+
+  </div><a class="u-url" href="/git/2018/10/29/SSH-KEYS-GIT.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">JT.H 6-min/km</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">JT.H 6-min/km</li><li><a class="u-email" href="mailto:0111charles@gmail.com">0111charles@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jtnomoney"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jtnomoney</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>No idea what I am going to do here. Maybe I will record some technology/sports that I&#39;m interested on. :&gt;</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
