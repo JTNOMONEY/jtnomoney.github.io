@@ -1,2 +1,0 @@
-# jtnomoney.github.io
-
