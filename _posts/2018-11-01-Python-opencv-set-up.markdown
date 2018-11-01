@@ -69,7 +69,7 @@ spyder
 {% endhighlight %}
 
 Run an example on my environment [2]
-![pic01](https://raw.githubusercontent.com/JTNOMONEY/jtnomoney.github.io/master/_media/images/spyder_python.png){:class="img-responsive"}
+![pic01](/media/images/spyder_python.png)
 
 Reference
 ---
