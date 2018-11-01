@@ -1,0 +1,44 @@
+<p>Create two keys for bitbucket and github</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"company"</span> <span class="nt">-f</span> <span class="s2">"company"</span>
+ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"JTNOMONEY"</span> <span class="nt">-f</span> <span class="s2">"JTNOMONEY"</span></code></pre></figure>
+
+<p>Clear cached key</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add <span class="nt">-D</span></code></pre></figure>
+
+<p>Add two keys and check afterwards</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add ~/.ssh/company
+ssh-add ~/.ssh/JTNOMONEY
+ssh-add <span class="nt">-l</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">ssh-add</code> is not working, try</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">eval</span> <span class="s2">"</span><span class="k">$(</span>ssh-agent<span class="k">)</span><span class="s2">"</span></code></pre></figure>
+
+<p>Add a config files ./ssh/config</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#--Company's bitbucket</span>
+Host bitbucket.company.com.tw
+  HostName bitbucket.company.com.tw
+  IdentityFile ~/.ssh/company
+
+<span class="c">#--JTNOMONEY github</span>
+Host github.com
+  HostName github.com
+  IdentityFile ~/.ssh/JTNOMONEY</code></pre></figure>
+
+<p>Set an example of default name/email using <code class="highlighter-rouge">git config</code> and check settings</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#--Company's bitbucket</span>
+git config <span class="nt">--global</span> user.name <span class="s2">"company_name"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"company_name@company.com"</span>
+git config <span class="nt">--list</span></code></pre></figure>
+
+<p>Test github account</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">git clone git@github.com:JTNOMONEY/jtnomoney.github.io.git
+jtnomoney.github.io<span class="nv">$ </span>git config user.name <span class="s2">"jtnomoney"</span>
+jtnomoney.github.io<span class="nv">$ </span>git config user.email <span class="s2">"jtnomoney@gmail.com"</span></code></pre></figure>
+

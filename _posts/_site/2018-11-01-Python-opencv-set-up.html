@@ -1,0 +1,53 @@
+<p>Lately, my friend was asking me how to set up python environment since he had tried many times on his windows based enviroment.
+I’m have few experience though and all of them is on Linux. All I can recall was about the embedded porting for SAMBA application 
+in which some codes relates to python and some material for toolchain that is used scripts in python.</p>
+
+<p>Here I note the steps for someone who needs as reference as well as for my friend.</p>
+
+<p>– Install Anaconda
+Anaconda already is good start for rookie (like me) to prement of conflictions on package installation.
+We can find the latest one on https://www.anaconda.com/download/ and just clicking “next step” until installation sucessfully.
+After installation, we can open Anaconda Prompt with admin user.
+Check the conda version</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nt">--version</span>
+<span class="c"># conda 4.5.11</span></code></pre></figure>
+
+<p>Under Anaconda Prompt, create an enviornment which is based on python 3.5.2.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda create <span class="nt">-n</span> opencv_py352_demo <span class="nv">python</span><span class="o">=</span>3.5.2</code></pre></figure>
+
+<p>Check one of env you created, naming opencv_py352_demo</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda info <span class="nt">--envs</span>
+<span class="c"># conda environments:</span>
+<span class="c">#</span>
+base                     C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3
+opencv_py352_demo     <span class="k">*</span>  C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\o</span>pencv_py352_demo</code></pre></figure>
+
+<p>If you want to check all envs. and remove some of them, you can type:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda remove <span class="nt">--name</span> myenv <span class="nt">--all</span>
+conda <span class="nb">env </span>remove <span class="nt">--name</span> myenv</code></pre></figure>
+
+<p>Install opencv</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nb">install</span> <span class="nt">-c</span> https://conda.anaconda.org/menpo opencv3</code></pre></figure>
+
+<p>– Spyder and SciPy
+Spyder editor is strong IDE tools, and likes MATLAB env and for mathematics, science, and engineering also 
+I will include SciPy (pronounced “Sigh Pie”) lib, matplotlib to make them looks more like using under MATLAB
+which i familar with</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Install spyder
+conda <span class="nb">install </span>spyder</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Install matplotlib
+conda <span class="nb">install </span>matplotlib</code></pre></figure>
+
+<p>open spyder IDE</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">spyder</code></pre></figure>
+
+<p>Run an example on spyder</p>
+
