@@ -1,11 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-11-01T15:31:12+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">JT.H 6-min/km</title><subtitle>No idea what I am going to do here. Maybe I will record some technology/sports that I'm interested on. :&gt;</subtitle><entry><title type="html">Install Python and OpenCV on windows</title><link href="http://localhost:4000/git/2018/11/01/Python-opencv-set-up.html" rel="alternate" type="text/html" title="Install Python and OpenCV on windows" /><published>2018-11-01T12:23:10+08:00</published><updated>2018-11-01T12:23:10+08:00</updated><id>http://localhost:4000/git/2018/11/01/Python-opencv-set-up</id><content type="html" xml:base="http://localhost:4000/git/2018/11/01/Python-opencv-set-up.html">&lt;p&gt;My friend was asking me how to set up python environment since he had tried for a while but failed on his windows based enviroment.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-11-19T17:23:07+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">JT.H 6-min/km</title><subtitle>No idea what I am going to do here. Maybe I will record some technology/sports that I'm interested on. :&gt;</subtitle><entry><title type="html">Install embedded rootfs on USB disk</title><link href="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" rel="alternate" type="text/html" title="Install embedded rootfs on USB disk" /><published>2018-11-19T16:46:10+08:00</published><updated>2018-11-19T16:46:10+08:00</updated><id>http://localhost:4000/linux/2018/11/19/embedded-rootfs</id><content type="html" xml:base="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html">&lt;h2 id=&quot;usb-disk-preparation&quot;&gt;USB disk preparation&lt;/h2&gt;
+&lt;p&gt;Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04)&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;fdisk /dev/sdb
+&lt;span class=&quot;c&quot;&gt;#use fdisk to format usb and partitioning USB what you want&lt;/span&gt;
+mkfs.ext4 /dev/sdb
+&lt;span class=&quot;c&quot;&gt;#you need to double check which /dev/sd? is detected, example: sdb&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;rootfs-generation&quot;&gt;Rootfs generation&lt;/h2&gt;
+&lt;p&gt;Use debootstrap to make a debian rootfs, check[1]
+or refer to a good scripts on github[2]&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;nb&quot;&gt;sudo&lt;/span&gt; ./make-rootfs.sh armel
+&lt;span class=&quot;c&quot;&gt;#armel should be general on arm platform; &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#armhf is also supported but you need to check your target board with FPU&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;nb&quot;&gt;sudo cp&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rvf&lt;/span&gt; debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/
+&lt;span class=&quot;c&quot;&gt;#Copy generated rootfs folder to USB where it was mounted&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;generated-a-chroot-script&quot;&gt;Generated a chroot script&lt;/h2&gt;
+&lt;p&gt;Wrote a chroot script (chrootfs.sh) and stored into USB disk&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/busybox sh&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/mnt/disk1/armel-rootfs&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/bin/bash&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;usb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/dev/sda&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;bb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/bin/busybox&quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;x&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;x&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+        &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/dev&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/proc&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/sys&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bcmfs&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount | &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/dev&quot;&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bind&lt;/span&gt; /dev     &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/dev&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount | &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/dev/pts&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bind&lt;/span&gt; /dev/pts &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/dev/pts&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount | &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/proc&quot;&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bind&lt;/span&gt; /proc    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/proc&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount | &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/sys&quot;&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bind&lt;/span&gt; /sys     &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/sys&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount | &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bcmfs&quot;&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bind&lt;/span&gt; /        &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;chroot&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bcmfs&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/bin:/bin&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/root&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;USER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$bb&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;chroot&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$chroot&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$bin&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;chroot-on-target-board&quot;&gt;Chroot on target board&lt;/h2&gt;
+&lt;p&gt;Install USB disk on target board and execute chroot scripts&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;./chrootfs.sh&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;install-utility-via-apt-package&quot;&gt;Install utility via apt package&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;apt-get update
+&lt;span class=&quot;c&quot;&gt;#please check your networking before accessing apt package.&lt;/span&gt;
+apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;python
+&lt;span class=&quot;c&quot;&gt;#install python as example&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;p&gt;[1] https://wiki.debian.org/EmDebian/CrossDebootstrap&lt;/p&gt;
+
+&lt;p&gt;[2] https://github.com/jubinson/debian-rootfs&lt;/p&gt;</content><author><name></name></author><summary type="html">USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb</summary></entry><entry><title type="html">Install Python and OpenCV on windows</title><link href="http://localhost:4000/git/2018/11/01/Python-opencv-set-up.html" rel="alternate" type="text/html" title="Install Python and OpenCV on windows" /><published>2018-11-01T12:23:10+08:00</published><updated>2018-11-01T12:23:10+08:00</updated><id>http://localhost:4000/git/2018/11/01/Python-opencv-set-up</id><content type="html" xml:base="http://localhost:4000/git/2018/11/01/Python-opencv-set-up.html">&lt;p&gt;My friend was asking me how to set up python environment since he had tried for a while but failed on his windows based enviroment.
 I have few experience though and all of the experence is based on Linux system. All I can recall are about the embedded porting for SAMBA application 
 in which some codes relates to python and some material for cross-toolchain that scripts in python. So I spend some time to reference open course[1]&lt;/p&gt;
 
 &lt;p&gt;Here I note the steps for someone who needs as reference as well as for my friend.&lt;/p&gt;
 
 &lt;h2 id=&quot;install-anaconda&quot;&gt;Install Anaconda&lt;/h2&gt;
-&lt;p&gt;Anaconda is a good start for rookie (like me) to prement of conflictions on package installations. We can find the latest one on https://www.anaconda.com/download/ and just clicking “next step” until installation sucessfully.After installation, we can open Anaconda Prompt with admin user.&lt;/p&gt;
+&lt;p&gt;Anaconda is a good start for rookie (like me) to avoid some conflictions on package installations. We can find the latest one on https://www.anaconda.com/download/ and just clicking “next step” until installation sucessfully.After installation, we can open Anaconda Prompt with admin user.&lt;/p&gt;
 
 &lt;p&gt;Check the conda version&lt;/p&gt;
 
@@ -59,7 +125,8 @@ conda &lt;span class=&quot;nb&quot;&gt;env &lt;/span&gt;remove &lt;span class=&q
 
 &lt;p&gt;[2] https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_gradients/py_gradients.html#gradients&lt;/p&gt;</content><author><name></name></author><summary type="html">My friend was asking me how to set up python environment since he had tried for a while but failed on his windows based enviroment. I have few experience though and all of the experence is based on Linux system. All I can recall are about the embedded porting for SAMBA application in which some codes relates to python and some material for cross-toolchain that scripts in python. So I spend some time to reference open course[1]</summary></entry><entry><title type="html">The multiple ssh keys for bitbucket and github</title><link href="http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html" rel="alternate" type="text/html" title="The multiple ssh keys for bitbucket and github" /><published>2018-10-29T16:45:10+08:00</published><updated>2018-10-29T16:45:10+08:00</updated><id>http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT</id><content type="html" xml:base="http://localhost:4000/git/2018/10/29/SSH-KEYS-GIT.html">&lt;p&gt;Create two keys for bitbucket and github&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ssh-keygen &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; rsa &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;company&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;company&quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;sshkey
+ssh-keygen &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; rsa &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;company&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;company&quot;&lt;/span&gt;
 ssh-keygen &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; rsa &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;JTNOMONEY&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;JTNOMONEY&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Clear cached key&lt;/p&gt;
@@ -68,8 +135,8 @@ ssh-keygen &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; rsa &lt;span class=&
 
 &lt;p&gt;Add two keys and check afterwards&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ssh-add ~/.ssh/company
-ssh-add ~/.ssh/JTNOMONEY
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ssh-add ~/sshkey/company
+ssh-add ~/sshkey/JTNOMONEY
 ssh-add &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;If &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh-add&lt;/code&gt; is not working, try&lt;/p&gt;
@@ -95,8 +162,8 @@ git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; user.name &lt;
 git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; user.email &lt;span class=&quot;s2&quot;&gt;&quot;company_name@company.com&quot;&lt;/span&gt;
 git config &lt;span class=&quot;nt&quot;&gt;--list&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Test github account&lt;/p&gt;
+&lt;p&gt;Add your ssh public keys on github/bitbucket, then test github account for example:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;git clone git@github.com:JTNOMONEY/jtnomoney.github.io.git
 jtnomoney.github.io&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git config user.name &lt;span class=&quot;s2&quot;&gt;&quot;jtnomoney&quot;&lt;/span&gt;
-jtnomoney.github.io&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git config user.email &lt;span class=&quot;s2&quot;&gt;&quot;jtnomoney@gmail.com&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html">Create two keys for bitbucket and github ssh-keygen -t rsa -C &quot;company&quot; -f &quot;company&quot; ssh-keygen -t rsa -C &quot;JTNOMONEY&quot; -f &quot;JTNOMONEY&quot;</summary></entry></feed>
+jtnomoney.github.io&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git config user.email &lt;span class=&quot;s2&quot;&gt;&quot;jtnomoney@gmail.com&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html">Create two keys for bitbucket and github mkdir sshkey ssh-keygen -t rsa -C &quot;company&quot; -f &quot;company&quot; ssh-keygen -t rsa -C &quot;JTNOMONEY&quot; -f &quot;JTNOMONEY&quot;</summary></entry></feed>

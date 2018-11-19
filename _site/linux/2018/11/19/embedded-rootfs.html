@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Install embedded rootfs on USB disk | JT.H 6-min/km</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="Install embedded rootfs on USB disk" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb" />
+<meta property="og:description" content="USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb" />
+<link rel="canonical" href="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
+<meta property="og:url" content="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
+<meta property="og:site_name" content="JT.H 6-min/km" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-19T16:46:10+08:00" />
+<script type="application/ld+json">
+{"description":"USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb","@type":"BlogPosting","url":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html","headline":"Install embedded rootfs on USB disk","dateModified":"2018-11-19T16:46:10+08:00","datePublished":"2018-11-19T16:46:10+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="JT.H 6-min/km" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">JT.H 6-min/km</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Install embedded rootfs on USB disk</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-11-19T16:46:10+08:00" itemprop="datePublished">Nov 19, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="usb-disk-preparation">USB disk preparation</h2>
+<p>Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04)</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">fdisk /dev/sdb
+<span class="c">#use fdisk to format usb and partitioning USB what you want</span>
+mkfs.ext4 /dev/sdb
+<span class="c">#you need to double check which /dev/sd? is detected, example: sdb</span></code></pre></figure>
+
+<h2 id="rootfs-generation">Rootfs generation</h2>
+<p>Use debootstrap to make a debian rootfs, check[1]
+or refer to a good scripts on github[2]</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo</span> ./make-rootfs.sh armel
+<span class="c">#armel should be general on arm platform; </span>
+<span class="c">#armhf is also supported but you need to check your target board with FPU</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo cp</span> <span class="nt">-rvf</span> debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/
+<span class="c">#Copy generated rootfs folder to USB where it was mounted</span></code></pre></figure>
+
+<h2 id="generated-a-chroot-script">Generated a chroot script</h2>
+<p>Wrote a chroot script (chrootfs.sh) and stored into USB disk</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/busybox sh</span>
+
+<span class="nb">chroot</span><span class="o">=</span><span class="s2">"/mnt/disk1/armel-rootfs"</span>
+<span class="nv">bin</span><span class="o">=</span><span class="s2">"/bin/bash"</span>
+<span class="nv">usb</span><span class="o">=</span><span class="s2">"/dev/sda"</span>
+
+<span class="nv">bb</span><span class="o">=</span><span class="s2">"/bin/busybox"</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="s2">"x</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"x"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">bin</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+<span class="k">fi</span>
+
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>
+
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>     <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /dev     <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev/pts"</span> <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /dev/pts <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev/pts"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>    <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /proc    <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>     <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /sys     <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>   <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /        <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>
+
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/bin:/bin"</span>
+<span class="nb">export </span><span class="nv">HOME</span><span class="o">=</span><span class="s2">"/root"</span>
+<span class="nb">export </span><span class="nv">USER</span><span class="o">=</span><span class="s2">"root"</span>
+
+<span class="nv">$bb</span> <span class="nb">chroot</span> <span class="s2">"</span><span class="nv">$chroot</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$bin</span><span class="s2">"</span></code></pre></figure>
+
+<h2 id="chroot-on-target-board">Chroot on target board</h2>
+<p>Install USB disk on target board and execute chroot scripts</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./chrootfs.sh</code></pre></figure>
+
+<h2 id="install-utility-via-apt-package">Install utility via apt package</h2>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">apt-get update
+<span class="c">#please check your networking before accessing apt package.</span>
+apt-get <span class="nb">install </span>python
+<span class="c">#install python as example</span></code></pre></figure>
+
+<h2 id="reference">Reference</h2>
+<p>[1] https://wiki.debian.org/EmDebian/CrossDebootstrap</p>
+
+<p>[2] https://github.com/jubinson/debian-rootfs</p>
+
+
+  </div><a class="u-url" href="/linux/2018/11/19/embedded-rootfs.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">JT.H 6-min/km</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">JT.H 6-min/km</li><li><a class="u-email" href="mailto:0111charles@gmail.com">0111charles@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jtnomoney"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jtnomoney</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>No idea what I am going to do here. Maybe I will record some technology/sports that I&#39;m interested on. :&gt;</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

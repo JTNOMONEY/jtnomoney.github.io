@@ -7,6 +7,7 @@ categories: git
 
 Create two keys for bitbucket and github
 {% highlight shell %}
+mkdir sshkey
 ssh-keygen -t rsa -C "company" -f "company"
 ssh-keygen -t rsa -C "JTNOMONEY" -f "JTNOMONEY"
 {% endhighlight %}
@@ -18,8 +19,8 @@ ssh-add -D
 
 Add two keys and check afterwards
 {% highlight shell %}
-ssh-add ~/.ssh/company
-ssh-add ~/.ssh/JTNOMONEY
+ssh-add ~/sshkey/company
+ssh-add ~/sshkey/JTNOMONEY
 ssh-add -l
 {% endhighlight %}
 
@@ -49,7 +50,7 @@ git config --global user.email "company_name@company.com"
 git config --list
 {% endhighlight %}
 
-Test github account 
+Add your ssh public keys on github/bitbucket, then test github account for example: 
 {% highlight shell %}
 git clone git@github.com:JTNOMONEY/jtnomoney.github.io.git
 jtnomoney.github.io$ git config user.name "jtnomoney"
