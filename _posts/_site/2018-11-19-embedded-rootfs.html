@@ -1,0 +1,75 @@
+<h2 id="usb-disk-preparation">USB disk preparation</h2>
+<p>Prepare a USB disk and format to EXT filesystem on host PC.
+Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected.
+In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">fdisk /dev/sdb
+mkfs.ext4 /dev/sda</code></pre></figure>
+
+<h2 id="rootfs-generation">Rootfs generation</h2>
+<p>Use debootstrap to make a debian rootfs, check[1]. 
+Another good reference is on github[2]. To be noticed that ‘armel’ should be general for arm platform and ‘armhf’ is advanced and also supported. (but you need to check your target board with FPU). For more details, you can check debian website.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo</span> ./make-rootfs.sh armel</code></pre></figure>
+
+<p>After script excution, rootfs will be put on ‘build’ folder.
+Then, copy generated rootfs folder to USB where it was mounted on host PC.
+In my case, it was on media/jt/xxxx/</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo cp</span> <span class="nt">-rvf</span> debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/</code></pre></figure>
+
+<h2 id="generated-a-chroot-script">Generated a chroot script</h2>
+<p>Prepared a chroot script (chrootfs.sh) and stored into USB disk.
+Example as below:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/busybox sh</span>
+
+<span class="nb">chroot</span><span class="o">=</span><span class="s2">"/mnt/jail/armel-rootfs-2018xxxx"</span>
+<span class="nv">bin</span><span class="o">=</span><span class="s2">"/bin/bash"</span>
+<span class="nv">usb</span><span class="o">=</span><span class="s2">"/dev/sda"</span>
+
+<span class="nv">bb</span><span class="o">=</span><span class="s2">"/bin/busybox"</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="s2">"x</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"x"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">bin</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+<span class="k">fi</span>
+
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>
+<span class="nv">$bb</span> <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>
+
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>     <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /dev     <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev/pts"</span> <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /dev/pts <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/dev/pts"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>    <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /proc    <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/proc"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>     <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /sys     <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/sys"</span>
+<span class="nv">$bb</span> mount | <span class="nv">$bb</span> <span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>   <span class="o">||</span> <span class="nv">$bb</span> mount <span class="nt">-o</span> <span class="nb">bind</span> /        <span class="s2">"</span><span class="k">${</span><span class="nv">chroot</span><span class="k">}</span><span class="s2">/bcmfs"</span>
+
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/bin:/bin"</span>
+<span class="nb">export </span><span class="nv">HOME</span><span class="o">=</span><span class="s2">"/root"</span>
+<span class="nb">export </span><span class="nv">USER</span><span class="o">=</span><span class="s2">"root"</span>
+
+<span class="nv">$bb</span> <span class="nb">chroot</span> <span class="s2">"</span><span class="nv">$chroot</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$bin</span><span class="s2">"</span></code></pre></figure>
+
+<h2 id="chroot-on-target-board">Chroot on target board</h2>
+<p>Mount device</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">mount /dev/sda /mnt/jail/</code></pre></figure>
+
+<p>Install USB disk on target board and execute chroot scripts</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./chrootfs.sh</code></pre></figure>
+
+<h2 id="install-utility-via-apt-package">Install utility via apt package</h2>
+<p>For example to use ‘apt-get’, you need to check your networking. 
+The basic is adding route gateway and ping 8.8.8.8 for testing.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">apt-get update
+apt-get <span class="nb">install </span>python
+<span class="c">#install python as example</span></code></pre></figure>
+
+<h2 id="reference">Reference</h2>
+<p>[1] https://wiki.debian.org/EmDebian/CrossDebootstrap</p>
+
+<p>[2] https://github.com/jubinson/debian-rootfs</p>
+
