@@ -7,15 +7,15 @@
 <meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Install embedded rootfs on USB disk" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb" />
-<meta property="og:description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb" />
+<meta name="description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb mkfs.ext4 /dev/sda" />
+<meta property="og:description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb mkfs.ext4 /dev/sda" />
 <link rel="canonical" href="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
 <meta property="og:url" content="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
 <meta property="og:site_name" content="JT.H 6-min/km" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-11-19T16:46:10+08:00" />
 <script type="application/ld+json">
-{"description":"USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb","@type":"BlogPosting","url":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html","headline":"Install embedded rootfs on USB disk","dateModified":"2018-11-19T16:46:10+08:00","datePublished":"2018-11-19T16:46:10+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html"},"@context":"http://schema.org"}</script>
+{"description":"USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb mkfs.ext4 /dev/sda","@type":"BlogPosting","url":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html","headline":"Install embedded rootfs on USB disk","dateModified":"2018-11-19T16:46:10+08:00","datePublished":"2018-11-19T16:46:10+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="JT.H 6-min/km" /></head>
 <body><header class="site-header" role="banner">
@@ -51,17 +51,16 @@ Before formating/partitioning USB disk, you need to double check which /dev/sd? 
 In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda.</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">fdisk /dev/sdb
-
 mkfs.ext4 /dev/sda</code></pre></figure>
 
 <h2 id="rootfs-generation">Rootfs generation</h2>
 <p>Use debootstrap to make a debian rootfs, check[1]. Another good reference is on github[2]. 
-To be noticed that ‘armel’ should be general for arm platform and ‘armhf’ is advanced and also supported. 
+To be noticed that <code class="highlighter-rouge">armel</code> should be general for arm platform and <code class="highlighter-rouge">armhf</code> is advanced and also supported. 
 (but you need to check your target board with FPU. See debian website)</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo</span> ./make-rootfs.sh armel</code></pre></figure>
 
-<p>After you excute the script, rootfs will be put on ‘build’ folder.
+<p>After you excute the script, rootfs will be put on build folder.
 Then, copy generated rootfs folder to USB disk. (In my case, it was on media/jt/xxxx/)</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo cp</span> <span class="nt">-rvf</span> debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/</code></pre></figure>

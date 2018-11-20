@@ -12,20 +12,19 @@ Before formating/partitioning USB disk, you need to double check which /dev/sd? 
 In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda.
 {% highlight shell %}
 fdisk /dev/sdb
-
 mkfs.ext4 /dev/sda
 {% endhighlight %}
 
 Rootfs generation
 ---
 Use debootstrap to make a debian rootfs, check[1]. Another good reference is on github[2]. 
-To be noticed that 'armel' should be general for arm platform and 'armhf' is advanced and also supported. 
+To be noticed that `armel` should be general for arm platform and `armhf` is advanced and also supported. 
 (but you need to check your target board with FPU. See debian website) 
 {% highlight shell %}
 sudo ./make-rootfs.sh armel
 {% endhighlight %}
 
-After you excute the script, rootfs will be put on 'build' folder.
+After you excute the script, rootfs will be put on build folder.
 Then, copy generated rootfs folder to USB disk. (In my case, it was on media/jt/xxxx/)
 {% highlight shell %}
 sudo cp -rvf debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/
