@@ -1,14 +1,13 @@
-<p>Lately, my friend was asking me how to set up python environment since he had tried many times on his windows based enviroment.
-I’m have few experience though and all of them is on Linux. All I can recall was about the embedded porting for SAMBA application 
-in which some codes relates to python and some material for toolchain that is used scripts in python.</p>
+<p>My friend was asking me how to set up python environment since he had tried for a while but failed on his windows based enviroment.
+I have few experience though and all of the experence is based on Linux system. All I can recall are about the embedded porting for SAMBA application 
+in which some codes relates to python and some material for cross-toolchain that scripts in python. So I spend some time to reference open course[1]</p>
 
 <p>Here I note the steps for someone who needs as reference as well as for my friend.</p>
 
-<p>– Install Anaconda
-Anaconda already is good start for rookie (like me) to prement of conflictions on package installation.
-We can find the latest one on https://www.anaconda.com/download/ and just clicking “next step” until installation sucessfully.
-After installation, we can open Anaconda Prompt with admin user.
-Check the conda version</p>
+<h2 id="install-anaconda">Install Anaconda</h2>
+<p>Anaconda is a good start for rookie (like me) to avoid some conflictions on package installations. We can find the latest one on https://www.anaconda.com/download/ and just clicking “next step” until installation sucessfully.After installation, we can open Anaconda Prompt with admin user.</p>
+
+<p>Check the conda version</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nt">--version</span>
 <span class="c"># conda 4.5.11</span></code></pre></figure>
@@ -30,24 +29,33 @@ opencv_py352_demo     <span class="k">*</span>  C:<span class="se">\P</span>rogr
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda remove <span class="nt">--name</span> myenv <span class="nt">--all</span>
 conda <span class="nb">env </span>remove <span class="nt">--name</span> myenv</code></pre></figure>
 
-<p>Install opencv</p>
+<h2 id="install-opencv">Install OpenCV</h2>
+
+<p>OpenCV, Spyder, SciPy and matplotlib</p>
+
+<p>Spyder editor is strong IDE tools, and looks likes MATLAB env. If you are going to learn OpenCV, SciPy (pronounced “Sigh Pie”) and matplotlib are good combinations to do simulations on mathematics, science, engineering applications.</p>
+
+<p>Install OpenCV</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nb">install</span> <span class="nt">-c</span> https://conda.anaconda.org/menpo opencv3</code></pre></figure>
 
-<p>– Spyder and SciPy
-Spyder editor is strong IDE tools, and likes MATLAB env and for mathematics, science, and engineering also 
-I will include SciPy (pronounced “Sigh Pie”) lib, matplotlib to make them looks more like using under MATLAB
-which i familar with</p>
+<p>Install spyder</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Install spyder
-conda <span class="nb">install </span>spyder</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nb">install </span>spyder</code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Install matplotlib
-conda <span class="nb">install </span>matplotlib</code></pre></figure>
+<p>Install matplotlib</p>
 
-<p>open spyder IDE</p>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">conda <span class="nb">install </span>matplotlib</code></pre></figure>
+
+<p>Open spyder IDE</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">spyder</code></pre></figure>
 
-<p>Run an example on spyder</p>
+<p>Run an example on my environment [2]
+<img src="/media/images/spyder_python.png" alt="pic01" /></p>
+
+<h2 id="reference">Reference</h2>
+<p>[1] http://cs231n.github.io/python-numpy-tutorial/</p>
+
+<p>[2] https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_gradients/py_gradients.html#gradients</p>
 

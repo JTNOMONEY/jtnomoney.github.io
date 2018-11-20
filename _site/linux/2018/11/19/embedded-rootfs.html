@@ -7,15 +7,15 @@
 <meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Install embedded rootfs on USB disk" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb" />
-<meta property="og:description" content="USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb" />
+<meta name="description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb" />
+<meta property="og:description" content="USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb" />
 <link rel="canonical" href="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
 <meta property="og:url" content="http://localhost:4000/linux/2018/11/19/embedded-rootfs.html" />
 <meta property="og:site_name" content="JT.H 6-min/km" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-11-19T16:46:10+08:00" />
 <script type="application/ld+json">
-{"description":"USB disk preparation Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04) fdisk /dev/sdb #use fdisk to format usb and partitioning USB what you want mkfs.ext4 /dev/sdb #you need to double check which /dev/sd? is detected, example: sdb","@type":"BlogPosting","url":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html","headline":"Install embedded rootfs on USB disk","dateModified":"2018-11-19T16:46:10+08:00","datePublished":"2018-11-19T16:46:10+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html"},"@context":"http://schema.org"}</script>
+{"description":"USB disk preparation Prepare a USB disk and format to EXT filesystem on host PC. Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected. In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda. fdisk /dev/sdb","@type":"BlogPosting","url":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html","headline":"Install embedded rootfs on USB disk","dateModified":"2018-11-19T16:46:10+08:00","datePublished":"2018-11-19T16:46:10+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/linux/2018/11/19/embedded-rootfs.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="JT.H 6-min/km" /></head>
 <body><header class="site-header" role="banner">
@@ -46,30 +46,33 @@
 
   <div class="post-content e-content" itemprop="articleBody">
     <h2 id="usb-disk-preparation">USB disk preparation</h2>
-<p>Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04)</p>
+<p>Prepare a USB disk and format to EXT filesystem on host PC.
+Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected.
+In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda.</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">fdisk /dev/sdb
-<span class="c">#use fdisk to format usb and partitioning USB what you want</span>
-mkfs.ext4 /dev/sdb
-<span class="c">#you need to double check which /dev/sd? is detected, example: sdb</span></code></pre></figure>
+
+mkfs.ext4 /dev/sda</code></pre></figure>
 
 <h2 id="rootfs-generation">Rootfs generation</h2>
-<p>Use debootstrap to make a debian rootfs, check[1]
-or refer to a good scripts on github[2]</p>
+<p>Use debootstrap to make a debian rootfs, check[1]. Another good reference is on github[2]. 
+To be noticed that ‘armel’ should be general for arm platform and ‘armhf’ is advanced and also supported. 
+(but you need to check your target board with FPU. See debian website)</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo</span> ./make-rootfs.sh armel
-<span class="c">#armel should be general on arm platform; </span>
-<span class="c">#armhf is also supported but you need to check your target board with FPU</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo</span> ./make-rootfs.sh armel</code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo cp</span> <span class="nt">-rvf</span> debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/
-<span class="c">#Copy generated rootfs folder to USB where it was mounted</span></code></pre></figure>
+<p>After you excute the script, rootfs will be put on ‘build’ folder.
+Then, copy generated rootfs folder to USB disk. (In my case, it was on media/jt/xxxx/)</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo cp</span> <span class="nt">-rvf</span> debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/</code></pre></figure>
 
 <h2 id="generated-a-chroot-script">Generated a chroot script</h2>
-<p>Wrote a chroot script (chrootfs.sh) and stored into USB disk</p>
+<p>Prepared a <code class="highlighter-rouge">chroot</code> script (chrootfs.sh) and stored into USB disk.
+Example as below:</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/busybox sh</span>
 
-<span class="nb">chroot</span><span class="o">=</span><span class="s2">"/mnt/disk1/armel-rootfs"</span>
+<span class="nb">chroot</span><span class="o">=</span><span class="s2">"/mnt/jail/armel-rootfs-2018xxxx"</span>
 <span class="nv">bin</span><span class="o">=</span><span class="s2">"/bin/bash"</span>
 <span class="nv">usb</span><span class="o">=</span><span class="s2">"/dev/sda"</span>
 
@@ -99,14 +102,17 @@ or refer to a good scripts on github[2]</p>
 <h2 id="chroot-on-target-board">Chroot on target board</h2>
 <p>Install USB disk on target board and execute chroot scripts</p>
 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">mount /dev/sda /mnt/jail/</code></pre></figure>
+
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">./chrootfs.sh</code></pre></figure>
 
 <h2 id="install-utility-via-apt-package">Install utility via apt package</h2>
+<p>Below is a case for example to use <code class="highlighter-rouge">apt-get</code> and install <code class="highlighter-rouge">python</code>.
+To be noticed that you need to check your networking before using apt package. 
+The basic is to check your route gateway and ping 8.8.8.8 for testing.</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">apt-get update
-<span class="c">#please check your networking before accessing apt package.</span>
-apt-get <span class="nb">install </span>python
-<span class="c">#install python as example</span></code></pre></figure>
+apt-get <span class="nb">install </span>python</code></pre></figure>
 
 <h2 id="reference">Reference</h2>
 <p>[1] https://wiki.debian.org/EmDebian/CrossDebootstrap</p>

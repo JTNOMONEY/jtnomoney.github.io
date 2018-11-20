@@ -7,39 +7,39 @@ categories: Linux
 
 USB disk preparation
 ---
-Prepare a USB disk and format to EXT4 filesystem on host PC (my env is Ubuntu 16.04)
+Prepare a USB disk and format to EXT filesystem on host PC.
+Before formating/partitioning USB disk, you need to double check which /dev/sd? is detected.
+In my case, my host PC is using ubuntu 16.04 and inserted USB is detected on /dev/sda.
 {% highlight shell %}
 fdisk /dev/sdb
-#use fdisk to format usb and partitioning USB what you want
-mkfs.ext4 /dev/sdb
-#you need to double check which /dev/sd? is detected, example: sdb
+
+mkfs.ext4 /dev/sda
 {% endhighlight %}
 
 Rootfs generation
 ---
-Use debootstrap to make a debian rootfs, check[1]
-or refer to a good scripts on github[2]
-
+Use debootstrap to make a debian rootfs, check[1]. Another good reference is on github[2]. 
+To be noticed that 'armel' should be general for arm platform and 'armhf' is advanced and also supported. 
+(but you need to check your target board with FPU. See debian website) 
 {% highlight shell %}
 sudo ./make-rootfs.sh armel
-#armel should be general on arm platform; 
-#armhf is also supported but you need to check your target board with FPU
 {% endhighlight %}
 
+After you excute the script, rootfs will be put on 'build' folder.
+Then, copy generated rootfs folder to USB disk. (In my case, it was on media/jt/xxxx/)
 {% highlight shell %}
 sudo cp -rvf debian-rootfs/build/armel/armel-rootfs-2018xxxx /media/jt/xxxx/
-#Copy generated rootfs folder to USB where it was mounted
 {% endhighlight %}
-
 
 Generated a chroot script
 ---
-Wrote a chroot script (chrootfs.sh) and stored into USB disk
+Prepared a `chroot` script (chrootfs.sh) and stored into USB disk.
+Example as below:
 
 {% highlight shell %}
 #!/bin/busybox sh
 
-chroot="/mnt/disk1/armel-rootfs"
+chroot="/mnt/jail/armel-rootfs-2018xxxx"
 bin="/bin/bash"
 usb="/dev/sda"
 
@@ -72,18 +72,22 @@ Chroot on target board
 ---
 Install USB disk on target board and execute chroot scripts
 {% highlight shell %}
+mount /dev/sda /mnt/jail/
+{% endhighlight %}
+
+{% highlight shell %}
 ./chrootfs.sh
 {% endhighlight %}
 
 
 Install utility via apt package
 ---
+Below is a case for example to use `apt-get` and install `python`.
+To be noticed that you need to check your networking before using apt package. 
+The basic is to check your route gateway and ping 8.8.8.8 for testing.
 {% highlight shell %}
 apt-get update
-#please check your networking before accessing apt package.
 apt-get install python
-#install python as example
-
 {% endhighlight %}
 
 Reference

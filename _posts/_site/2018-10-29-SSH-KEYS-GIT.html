@@ -1,6 +1,7 @@
 <p>Create two keys for bitbucket and github</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"company"</span> <span class="nt">-f</span> <span class="s2">"company"</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">mkdir </span>sshkey
+ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"company"</span> <span class="nt">-f</span> <span class="s2">"company"</span>
 ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class="s2">"JTNOMONEY"</span> <span class="nt">-f</span> <span class="s2">"JTNOMONEY"</span></code></pre></figure>
 
 <p>Clear cached key</p>
@@ -9,8 +10,8 @@ ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-C</span> <span class
 
 <p>Add two keys and check afterwards</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add ~/.ssh/company
-ssh-add ~/.ssh/JTNOMONEY
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ssh-add ~/sshkey/company
+ssh-add ~/sshkey/JTNOMONEY
 ssh-add <span class="nt">-l</span></code></pre></figure>
 
 <p>If <code class="highlighter-rouge">ssh-add</code> is not working, try</p>
@@ -36,7 +37,7 @@ git config <span class="nt">--global</span> user.name <span class="s2">"company_
 git config <span class="nt">--global</span> user.email <span class="s2">"company_name@company.com"</span>
 git config <span class="nt">--list</span></code></pre></figure>
 
-<p>Test github account</p>
+<p>Add your ssh public keys on github/bitbucket, then test github account for example:</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell">git clone git@github.com:JTNOMONEY/jtnomoney.github.io.git
 jtnomoney.github.io<span class="nv">$ </span>git config user.name <span class="s2">"jtnomoney"</span>
