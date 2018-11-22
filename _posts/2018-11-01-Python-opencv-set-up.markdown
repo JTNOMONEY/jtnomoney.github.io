@@ -13,7 +13,7 @@ Here I note the steps for someone who needs as reference as well as for my frien
 
 Install Anaconda
 ---
-Anaconda is a good start for rookie (like me) to avoid some conflictions on package installations. We can find the latest one on https://www.anaconda.com/download/ and just clicking "next step" until installation sucessfully.After installation, we can open Anaconda Prompt with admin user.
+Anaconda is a good start for rookie (like me) to avoid some conflictions on package installations. We can find the latest one on [Anaconda](https://www.anaconda.com/download/) and just clicking "next step" until installation sucessfully.After installation, we can open `Anaconda Prompt` with admin user.
 
 Check the conda version 
 {% highlight shell %}
@@ -39,6 +39,11 @@ If you want to check all envs. and remove some of them, you can type:
 {% highlight shell %}
 conda remove --name myenv --all
 conda env remove --name myenv
+{% endhighlight %}
+
+If you have generated opencv_py352_demo, you can activate directly
+{% highlight shell %}
+activate opencv_py352_demo
 {% endhighlight %}
 
 Install OpenCV
