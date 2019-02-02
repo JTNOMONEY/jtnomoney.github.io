@@ -56,6 +56,7 @@ Spyder editor is strong IDE tools, and looks likes MATLAB env. If you are going 
 Install OpenCV
 {% highlight shell %}
 conda install -c https://conda.anaconda.org/menpo opencv3
+conda install -c conda-forge opencv
 {% endhighlight %}
 
 Install spyder
